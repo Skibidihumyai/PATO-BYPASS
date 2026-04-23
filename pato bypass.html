@@ -1,0 +1,652 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="BYPASS AC">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="theme-color" content="#e30000">
+    <link rel="manifest" href="data:application/manifest+json,{ %22name%22: %22BYPASS ANTI-CHEAT%22, %22short_name%22: %22BYPASS AC%22, %22description%22: %22Pato Bypass Anti-Cheat Tool%22, %22start_url%22: %22.%22, %22display%22: %22standalone%22, %22background_color%22: %22%23020408%22, %22theme_color%22: %22%23e30000%22, %22icons%22: [ { %22src%22: %22https://i.postimg.cc/j5VQDYDc/21917.png%22, %22sizes%22: %22512x512%22, %22type%22: %22image/png%22, %22purpose%22: %22any%20maskable%22 } ] }">
+    <link rel="apple-touch-icon" href="https://i.postimg.cc/j5VQDYDc/21917.png">
+    <title>BYPASS ANTI-CHEAT</title>
+
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Share+Tech+Mono&family=Rajdhani:wght@400;600;700&display=swap');
+
+        :root {
+            --accent: #e30000;
+            --accent2: #8b0000;
+            --bg-card: rgba(227,0,0,0.04);
+            --border: rgba(227,0,0,0.12);
+            --glow: 0 0 20px rgba(227,0,0,0.55);
+            --text-dim: #4a6070;
+            --accent-rgb: 227,0,0;
+            --accent2-rgb: 139,0,0;
+        }
+
+        @keyframes gradMove  { 0%{background-position:0% 50%} 50%{background-position:100% 50%} 100%{background-position:0% 50%} }
+        @keyframes slideIn   { from{opacity:0;transform:translateY(10px)} to{opacity:1;transform:translateY(0)} }
+        @keyframes floatUp   { from{opacity:0;transform:translateY(10px)} to{opacity:1;transform:translateY(0)} }
+        @keyframes pulse     { 0%,100%{opacity:1} 50%{opacity:0.5} }
+        @keyframes glowPulse { 0%,100%{box-shadow:var(--glow)} 50%{box-shadow:0 0 38px rgba(227,0,0,0.95)} }
+        @keyframes spin      { from{transform:rotate(0deg)} to{transform:rotate(360deg)} }
+        @keyframes logIn     { from{opacity:0;transform:translateX(-4px)} to{opacity:1;transform:translateX(0)} }
+
+        * { box-sizing:border-box; }
+
+        body {
+            margin:0; padding:0;
+            background:linear-gradient(-45deg,#020408,#0a0406,#060204,#020004);
+            background-size:400% 400%;
+            animation:gradMove 15s ease infinite;
+            font-family:'Rajdhani',sans-serif;
+            display:flex; justify-content:center; align-items:center;
+            min-height:100vh; color:#fff; overflow-x:hidden;
+            -webkit-user-select:none;
+        }
+        body::after {
+            content:''; position:fixed; inset:0;
+            background:repeating-linear-gradient(0deg,transparent,transparent 2px,rgba(0,0,0,0.03) 2px,rgba(0,0,0,0.03) 4px);
+            pointer-events:none; z-index:9999;
+        }
+        #particles-js { position:fixed; inset:0; z-index:1; pointer-events:none; }
+
+        /* TOAST */
+        #toast {
+            position:fixed; top:20px; right:20px;
+            padding:10px 20px; border-radius:8px; font-size:11px; font-weight:700;
+            z-index:9000; opacity:0; transition:all 0.3s cubic-bezier(0.175,0.885,0.32,1.275);
+            transform:translateY(-15px) scale(0.9); pointer-events:none;
+            backdrop-filter:blur(10px); font-family:'Orbitron'; letter-spacing:2px;
+        }
+        .toast-on  { background:rgba(var(--accent-rgb),0.15); color:var(--accent); opacity:1!important; transform:translateY(0) scale(1)!important; box-shadow:var(--glow); border:1px solid rgba(var(--accent-rgb),0.3); }
+        .toast-off { background:rgba(139,0,0,0.18); color:#ff4444; opacity:1!important; transform:translateY(0) scale(1)!important; box-shadow:0 0 20px rgba(139,0,0,0.5); border:1px solid rgba(139,0,0,0.4); }
+
+        /* GLASS */
+        .glass {
+            background:rgba(2,8,15,0.92);
+            backdrop-filter:blur(25px); -webkit-backdrop-filter:blur(25px);
+            border:1px solid var(--border); border-radius:16px;
+            box-shadow:0 0 60px rgba(var(--accent-rgb),0.08),0 30px 60px rgba(0,0,0,0.8);
+            z-index:10; position:relative;
+        }
+
+        /* ============ LOGIN ============ */
+        #login-screen {
+            width:320px; padding:44px 28px 34px; text-align:center;
+            position:relative; overflow:hidden;
+        }
+        #login-screen::before {
+            content:'PATO';
+            position:absolute; top:-12px; left:50%; transform:translateX(-50%);
+            font-family:'Orbitron'; font-size:76px; font-weight:900;
+            color:rgba(var(--accent-rgb),0.03); white-space:nowrap; pointer-events:none;
+        }
+        .login-icon {
+            width:70px; height:70px; border-radius:16px;
+            border:1px solid rgba(var(--accent-rgb),0.3);
+            box-shadow:var(--glow);
+            margin:0 auto 14px; display:block; object-fit:cover;
+        }
+        .login-logo {
+            font-family:'Orbitron'; font-size:22px; font-weight:900;
+            color:var(--accent); letter-spacing:6px;
+            text-shadow:var(--glow); margin-bottom:4px;
+        }
+        .login-sub { font-size:9px; color:var(--text-dim); letter-spacing:4px; margin-bottom:28px; font-family:'Share Tech Mono'; }
+        .login-inp-wrap { position:relative; margin-bottom:14px; }
+        .login-inp-wrap input {
+            width:100%; padding:13px 18px;
+            background:rgba(var(--accent-rgb),0.03);
+            border:1px solid rgba(var(--accent-rgb),0.2);
+            color:#fff; border-radius:8px; text-align:center;
+            outline:none; font-family:'Share Tech Mono'; font-size:14px; letter-spacing:4px;
+            transition:border-color 0.3s,box-shadow 0.3s;
+        }
+        .login-inp-wrap input:focus { border-color:var(--accent); box-shadow:var(--glow); }
+        .login-btn {
+            width:100%; padding:13px; background:transparent;
+            color:var(--accent); font-weight:700; border:1px solid var(--accent);
+            border-radius:8px; cursor:pointer; font-family:'Orbitron'; font-size:11px;
+            letter-spacing:4px; transition:all 0.3s; position:relative; overflow:hidden;
+            display:flex; align-items:center; justify-content:center; gap:7px;
+        }
+        .login-btn::before {
+            content:''; position:absolute; top:0; left:-100%; width:100%; height:100%;
+            background:linear-gradient(90deg,transparent,rgba(var(--accent-rgb),0.2),transparent);
+            transition:left 0.5s;
+        }
+        .login-btn:hover::before { left:100%; }
+        .login-btn:hover { background:rgba(var(--accent-rgb),0.1); box-shadow:var(--glow); }
+        .login-btn:active { transform:scale(0.97); }
+
+        #login-loading { display:none; margin-top:22px; }
+        .prog-bg  { width:100%; height:3px; background:rgba(255,255,255,0.05); border-radius:10px; overflow:hidden; }
+        .prog-bar { width:0%; height:100%; background:linear-gradient(90deg,var(--accent2),var(--accent)); box-shadow:0 0 10px var(--accent); transition:width 0.1s; }
+        #login-p-text { color:var(--text-dim); font-size:9px; margin-top:8px; font-family:'Share Tech Mono'; letter-spacing:2px; }
+
+        /* ============ MAIN PANEL ============ */
+        #main-panel {
+            width:100%; max-width:375px;
+            display:none; flex-direction:column;
+            overflow:hidden; margin:20px 14px;
+        }
+
+        /* WIN HEADER */
+        .win-header {
+            height:48px; background:rgba(var(--accent-rgb),0.04);
+            display:flex; align-items:center; padding:0 18px;
+            justify-content:space-between; border-bottom:1px solid var(--border); flex-shrink:0;
+        }
+        .win-dots { display:flex; gap:7px; }
+        .win-dot  { width:10px; height:10px; border-radius:50%; }
+        .hdr-title { font-family:'Orbitron'; color:var(--accent); font-size:10px; letter-spacing:2px; text-shadow:var(--glow); }
+        .hdr-fps   { font-family:'Share Tech Mono'; color:var(--accent); font-size:9px; }
+
+        .panel-body { padding:16px 15px; display:flex; flex-direction:column; gap:12px; }
+
+        /* STATUS ROW */
+        .status-row {
+            display:flex; align-items:center; justify-content:space-between;
+            background:rgba(var(--accent-rgb),0.04); border:1px solid var(--border);
+            border-radius:10px; padding:10px 13px;
+            font-family:'Share Tech Mono'; font-size:9px;
+        }
+        .sdot { width:7px; height:7px; border-radius:50%; background:#34c759; box-shadow:0 0 8px #34c759; animation:pulse 2s infinite; display:inline-block; margin-right:5px; }
+
+        /* INFO GRID */
+        .info-grid { display:grid; grid-template-columns:1fr 1fr; gap:8px; }
+        .info-card { background:rgba(var(--accent-rgb),0.04); border:1px solid var(--border); border-radius:9px; padding:11px 10px; text-align:center; }
+        .info-val  { font-family:'Orbitron'; font-size:15px; font-weight:900; color:var(--accent); text-shadow:var(--glow); }
+        .info-lbl  { font-size:8px; color:var(--text-dim); font-family:'Share Tech Mono'; letter-spacing:1px; margin-top:3px; }
+
+        /* SECTION HDR */
+        .sec-hdr {
+            font-family:'Orbitron'; font-size:10px; color:var(--accent);
+            margin:0 0 11px; padding:8px 10px;
+            background:rgba(var(--accent-rgb),0.05);
+            border-left:3px solid var(--accent);
+            border-radius:0 6px 6px 0; letter-spacing:2px;
+            display:flex; align-items:center; gap:7px;
+        }
+
+        /* UID BLOCK */
+        .uid-block { background:rgba(var(--accent-rgb),0.03); border:1px solid var(--border); border-radius:12px; padding:14px; }
+        .uid-label { font-family:'Orbitron'; font-size:9px; color:var(--text-dim); letter-spacing:2px; margin-bottom:9px; display:flex; align-items:center; gap:6px; }
+        .uid-wrap  { position:relative; }
+        .uid-wrap input {
+            width:100%; padding:13px 40px 13px 16px;
+            background:rgba(var(--accent-rgb),0.04);
+            border:1px solid rgba(var(--accent-rgb),0.2);
+            color:#fff; border-radius:8px; text-align:center;
+            outline:none; font-family:'Share Tech Mono'; font-size:16px; letter-spacing:6px;
+            transition:border-color 0.3s,box-shadow 0.3s;
+        }
+        .uid-wrap input:focus { border-color:var(--accent); box-shadow:var(--glow); }
+        .uid-wrap input.uid-ok  { border-color:#34c759; box-shadow:0 0 15px rgba(52,199,89,0.4); }
+        .uid-wrap input.uid-bad { border-color:#ff453a; box-shadow:0 0 15px rgba(255,69,58,0.4); }
+        .uid-ico  { position:absolute; right:12px; top:50%; transform:translateY(-50%); width:20px; height:20px; display:flex; align-items:center; justify-content:center; }
+        .uid-hint { font-family:'Share Tech Mono'; font-size:8px; color:var(--text-dim); margin-top:7px; text-align:center; letter-spacing:1px; }
+        .uid-hint.ok  { color:#34c759; }
+        .uid-hint.err { color:#ff453a; }
+
+        /* BYPASS BTN */
+        .bypass-btn {
+            width:100%; padding:16px; border-radius:10px;
+            font-family:'Orbitron'; font-size:12px; font-weight:700; letter-spacing:3px;
+            cursor:pointer; transition:all 0.3s; position:relative; overflow:hidden;
+            display:flex; align-items:center; justify-content:center; gap:8px;
+        }
+        .bypass-btn.locked   { background:rgba(255,255,255,0.02); border:1px solid rgba(255,255,255,0.06); color:#2a3a4a; cursor:not-allowed; }
+        .bypass-btn.unlocked { background:linear-gradient(135deg,rgba(var(--accent-rgb),0.18),rgba(var(--accent2-rgb),0.18)); border:1px solid var(--accent); color:var(--accent); text-shadow:var(--glow); animation:glowPulse 2.5s ease-in-out infinite; }
+        .bypass-btn.unlocked::before { content:''; position:absolute; top:0; left:-100%; width:100%; height:100%; background:linear-gradient(90deg,transparent,rgba(var(--accent-rgb),0.25),transparent); transition:left 0.5s; }
+        .bypass-btn.unlocked:hover::before { left:100%; }
+        .bypass-btn.unlocked:active { transform:scale(0.97); }
+        .bypass-btn.busy     { background:rgba(var(--accent-rgb),0.08); border:1px solid rgba(var(--accent-rgb),0.3); color:var(--accent); cursor:not-allowed; animation:none; }
+
+        /* FOOTER */
+        .footer-bar {
+            height:38px; background:rgba(0,0,0,0.5); border-top:1px solid var(--border);
+            display:flex; align-items:center; justify-content:space-around;
+            font-size:8px; color:var(--text-dim); font-family:'Share Tech Mono'; flex-shrink:0;
+        }
+        .footer-bar b { color:var(--accent); }
+
+        /* ============ SYSLOG OVERLAY ============ */
+        #syslog-overlay {
+            position:fixed; inset:0; background:rgba(0,0,0,0.92); z-index:500;
+            display:none; align-items:center; justify-content:center;
+            backdrop-filter:blur(8px); padding:18px;
+        }
+        #syslog-overlay.show { display:flex; animation:floatUp 0.3s ease; }
+
+        .syslog-box {
+            width:100%; max-width:360px;
+        }
+
+        .syslog-hdr {
+            padding:14px 18px; border-bottom:1px solid var(--border);
+            font-family:'Orbitron'; font-size:10px; color:var(--accent);
+            letter-spacing:3px; text-shadow:var(--glow);
+            display:flex; justify-content:space-between; align-items:center;
+            background:rgba(var(--accent-rgb),0.04);
+        }
+        .syslog-hdr-l { display:flex; align-items:center; gap:8px; }
+
+        .syslog-body { padding:14px 15px; }
+
+        #syslog-text {
+            font-family:'Share Tech Mono'; font-size:9px; color:var(--accent);
+            background:rgba(0,0,0,0.5); border:1px solid rgba(var(--accent-rgb),0.1);
+            border-radius:8px; padding:13px;
+            height:175px; overflow-y:auto; line-height:1.9; margin-bottom:13px;
+        }
+        #syslog-text .lg { color:#34c759; animation:logIn 0.15s ease; display:block; }
+        #syslog-text .ly { color:#ffd60a; animation:logIn 0.15s ease; display:block; }
+        #syslog-text .ld { color:#2a4050; animation:logIn 0.15s ease; display:block; }
+        #syslog-text .lr { color:var(--accent); animation:logIn 0.15s ease; display:block; }
+
+        .prog-wrap     { display:none; margin-bottom:13px; }
+        .prog-wrap.on  { display:block; }
+        .prog-lbl      { font-family:'Share Tech Mono'; font-size:8px; color:var(--text-dim); letter-spacing:1px; margin-bottom:6px; }
+
+        /* GAME CHOICE */
+        #game-choice      { display:none; animation:slideIn 0.3s ease; }
+        #game-choice.show { display:block; }
+        .gc-title {
+            font-family:'Orbitron'; font-size:9px; color:var(--text-dim);
+            letter-spacing:2px; margin-bottom:11px; text-align:center;
+            display:flex; align-items:center; justify-content:center; gap:6px;
+        }
+        .game-btn {
+            width:100%; padding:14px 16px; border-radius:10px; margin-bottom:9px;
+            border:1px solid var(--border); background:var(--bg-card);
+            color:#aaa; cursor:pointer; text-align:left; transition:all 0.2s;
+            display:flex; justify-content:space-between; align-items:center;
+            font-family:'Orbitron'; font-size:11px; letter-spacing:1px;
+        }
+        .game-btn:hover  { border-color:var(--accent); color:#fff; background:rgba(var(--accent-rgb),0.08); box-shadow:var(--glow); }
+        .game-btn:active { transform:scale(0.98); }
+        .game-btn-l      { display:flex; align-items:center; gap:9px; }
+        .gbadge          { font-size:8px; padding:3px 9px; border-radius:20px; }
+        .gbadge-max      { background:rgba(var(--accent-rgb),0.15); color:var(--accent); border:1px solid rgba(var(--accent-rgb),0.3); }
+        .gbadge-nor      { background:rgba(52,199,89,0.12); color:#34c759; border:1px solid rgba(52,199,89,0.3); }
+
+        ::-webkit-scrollbar { width:3px; }
+        ::-webkit-scrollbar-track { background:transparent; }
+        ::-webkit-scrollbar-thumb { background:rgba(var(--accent-rgb),0.2); border-radius:10px; }
+
+        .spinner { width:14px; height:14px; border:2px solid rgba(var(--accent-rgb),0.2); border-top-color:var(--accent); border-radius:50%; animation:spin 0.7s linear infinite; display:inline-block; flex-shrink:0; }
+    </style>
+</head>
+<body>
+
+<div id="particles-js"></div>
+<div id="toast"></div>
+
+<!-- ==================== LOGIN ==================== -->
+<div id="login-screen" class="glass">
+    <img class="login-icon" src="https://i.postimg.cc/j5VQDYDc/21917.png" alt="" onerror="this.style.display='none'">
+    <div class="login-logo">BYPASS AC</div>
+    <div class="login-sub">ANTI-CHEAT BYPASS TOOL V.1</div>
+    <div class="login-inp-wrap">
+        <input type="password" id="key-input" placeholder="● ● ● ● ● ● ●"
+            onkeydown="if(event.key==='Enter')doLogin()">
+    </div>
+    <button class="login-btn" onclick="doLogin()">
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+        AUTHENTICATE
+    </button>
+    <div id="login-loading">
+        <div class="prog-bg"><div id="login-bar" class="prog-bar"></div></div>
+        <div id="login-p-text">INITIALIZING...</div>
+    </div>
+</div>
+
+<!-- ==================== MAIN PANEL ==================== -->
+<div id="main-panel" class="glass">
+
+    <div class="win-header">
+        <div class="win-dots">
+            <div class="win-dot" style="background:#ff5f56"></div>
+            <div class="win-dot" style="background:#ffbd2e"></div>
+            <div class="win-dot" style="background:#27c93f"></div>
+        </div>
+        <div class="hdr-title">BYPASS ANTI-CHEAT</div>
+        <div class="hdr-fps" id="top-fps">∿ 60.0 FPS</div>
+    </div>
+
+    <div class="panel-body">
+
+        <!-- Status -->
+        <div class="status-row">
+            <span style="color:#aaa;">
+                <span class="sdot"></span>STATUS:&nbsp;<span style="color:#34c759;font-weight:700;">ONLINE</span>
+            </span>
+            <span style="color:var(--accent);">HWID: <span id="hwid-val">--------</span></span>
+        </div>
+
+        <!-- Info cards -->
+        <div class="info-grid">
+            <div class="info-card"><div class="info-val" id="ping-val">24ms</div><div class="info-lbl">PING</div></div>
+            <div class="info-card"><div class="info-val">v3.0</div><div class="info-lbl">ENGINE</div></div>
+            <div class="info-card"><div class="info-val">AES-256</div><div class="info-lbl">ENCRYPT</div></div>
+            <div class="info-card"><div class="info-val" style="color:#34c759;text-shadow:0 0 15px #34c759;">OK</div><div class="info-lbl">BYPASS LV</div></div>
+        </div>
+
+        <!-- UID block -->
+        <div class="uid-block">
+            <div class="sec-hdr">
+                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+                UID VERIFICATION
+            </div>
+            <div class="uid-label">
+                <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+                PLAYER UID (11 DIGITS)
+            </div>
+            <div class="uid-wrap">
+                <input type="tel" id="uid-input" maxlength="11"
+                    placeholder="00000000000"
+                    oninput="onUid(this)" autocomplete="off">
+                <div class="uid-ico" id="uid-ico">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#2a3a4a" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+                </div>
+            </div>
+            <div class="uid-hint" id="uid-hint">กรอก UID 11 หลักก่อนทำการ Bypass</div>
+        </div>
+
+        <!-- Bypass button -->
+        <button class="bypass-btn locked" id="bypass-btn" onclick="startBypass()" disabled>
+            <span id="bypass-ico">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+            </span>
+            <span id="bypass-txt">BYPASS ANTI-CHEAT</span>
+        </button>
+
+    </div>
+
+    <div class="footer-bar">
+        <span>HWID: <b id="footer-hwid">--------</b></span>
+        <span>PING: <b id="footer-ping">24ms</b></span>
+        <span>SERVER: <b>ASIA-SG</b></span>
+        <span>STATUS: <b style="color:#34c759">● ONLINE</b></span>
+    </div>
+</div>
+
+<!-- ==================== SYSLOG OVERLAY ==================== -->
+<div id="syslog-overlay">
+    <div class="syslog-box glass">
+        <div class="syslog-hdr">
+            <div class="syslog-hdr-l">
+                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="4 17 10 11 4 5"/><line x1="12" y1="19" x2="20" y2="19"/></svg>
+                SYSTEM LOGS
+            </div>
+            <span style="font-size:9px;color:var(--text-dim);font-family:'Share Tech Mono';" id="syslog-uid-lbl">UID: -----------</span>
+        </div>
+        <div class="syslog-body">
+            <div id="syslog-text"></div>
+
+            <div class="prog-wrap" id="prog-wrap">
+                <div class="prog-lbl" id="prog-lbl">BYPASSING... 0%</div>
+                <div class="prog-bg"><div id="prog-bar" class="prog-bar"></div></div>
+            </div>
+
+            <div id="game-choice">
+                <div class="gc-title">
+                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="5 3 19 12 5 21 5 3"/></svg>
+                    เลือกเวอร์ชันที่ต้องการเปิด
+                </div>
+                <button class="game-btn" onclick="launchGame('max')">
+                    <div class="game-btn-l">
+                        <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
+                        FF MAX
+                    </div>
+                    <span class="gbadge gbadge-max">MAX</span>
+                </button>
+                <button class="game-btn" onclick="launchGame('normal')">
+                    <div class="game-btn-l">
+                        <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polygon points="10 8 16 12 10 16 10 8"/></svg>
+                        FF NORMAL
+                    </div>
+                    <span class="gbadge gbadge-nor">NORMAL</span>
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/particles.js/2.0.0/particles.min.js"></script>
+<script>
+// ===== VALID KEYS =====
+const VALID_KEYS = ['pato'];
+
+// ===== SOUND =====
+const popSnd = new Audio("data:audio/wav;base64,UklGRj4AAABXQVZFZm10IBAAAAABAAEAQB8AAEAfAAABAAgAZGF0YRIDAAAAZv9m/2b/Zv9m/2b/Zv8=");
+popSnd.volume = 0.3;
+function pop() { popSnd.currentTime=0; try{popSnd.play();}catch(e){} }
+
+function toast(msg, ok=true) {
+    const t = document.getElementById('toast');
+    t.innerText = msg;
+    t.className = ok ? 'toast-on' : 'toast-off';
+    setTimeout(() => t.className='', 2300);
+}
+
+// ===== HWID / FPS =====
+const hwid = Math.random().toString(36).substr(2,8).toUpperCase();
+document.getElementById('hwid-val').innerText = hwid;
+document.getElementById('footer-hwid').innerText = hwid;
+
+setInterval(() => {
+    const fps = (Math.random()*8+57).toFixed(1);
+    document.getElementById('top-fps').innerText = `∿ ${fps} FPS`;
+    const p = (Math.random()*8+18).toFixed(0)+'ms';
+    document.getElementById('ping-val').innerText = p;
+    document.getElementById('footer-ping').innerText = p;
+}, 800);
+
+// ===== LOGIN =====
+function doLogin() {
+    pop();
+    const val = document.getElementById('key-input').value.trim().toLowerCase();
+    if (!VALID_KEYS.includes(val)) {
+        toast('ACCESS DENIED', false);
+        document.getElementById('key-input').value = '';
+        return;
+    }
+    // Run loading bar
+    const loading = document.getElementById('login-loading');
+    const bar     = document.getElementById('login-bar');
+    const ptext   = document.getElementById('login-p-text');
+    loading.style.display = 'block';
+    const msgs = ['VERIFYING LICENSE KEY','LOADING BYPASS ENGINE','AUTHENTICATING HWID','CONNECTING ASIA SERVER','ACCESS GRANTED'];
+    let p = 0;
+    const iv = setInterval(() => {
+        p += Math.floor(Math.random()*13)+4;
+        if (p >= 100) {
+            p = 100; clearInterval(iv);
+            bar.style.width = '100%';
+            ptext.innerText = 'ACCESS GRANTED — WELCOME';
+            setTimeout(() => {
+                document.getElementById('login-screen').style.display = 'none';
+                const mp = document.getElementById('main-panel');
+                mp.style.display = 'flex';
+                toast('AUTHENTICATED', true);
+                initParticles();
+            }, 600);
+        } else {
+            bar.style.width = p + '%';
+            ptext.innerText = msgs[Math.min(Math.floor(p/22), msgs.length-1)] + '... ' + p + '%';
+        }
+    }, 70);
+}
+
+// ===== UID =====
+const I_LOCK = `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#2a3a4a" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>`;
+const I_OK   = `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#34c759" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>`;
+const I_X    = `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#ff453a" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>`;
+const I_SHIELD = `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>`;
+
+function onUid(inp) {
+    inp.value = inp.value.replace(/\D/g,'');
+    const n   = inp.value.length;
+    const ico = document.getElementById('uid-ico');
+    const hnt = document.getElementById('uid-hint');
+    const btn = document.getElementById('bypass-btn');
+    if (n === 11) {
+        inp.className = 'uid-ok';
+        ico.innerHTML = I_OK;
+        hnt.textContent = 'UID ถูกต้อง — พร้อม Bypass';
+        hnt.className = 'uid-hint ok';
+        btn.className = 'bypass-btn unlocked';
+        btn.disabled = false;
+    } else if (n > 0) {
+        inp.className = 'uid-bad';
+        ico.innerHTML = I_X;
+        hnt.textContent = `กรอกอีก ${11-n} หลัก (${n}/11)`;
+        hnt.className = 'uid-hint err';
+        btn.className = 'bypass-btn locked';
+        btn.disabled = true;
+    } else {
+        inp.className = '';
+        ico.innerHTML = I_LOCK;
+        hnt.textContent = 'กรอก UID 11 หลักก่อนทำการ Bypass';
+        hnt.className = 'uid-hint';
+        btn.className = 'bypass-btn locked';
+        btn.disabled = true;
+    }
+}
+
+// ===== BYPASS LOGS =====
+const LOGS = [
+    {c:'ld', m:'// PATO BYPASS ENGINE v3.0.1'},
+    {c:'ld', m:'// Anti-Cheat Module Initialized'},
+    {c:'ld', m:''},
+    {c:'ly', m:'[INIT] Loading bypass kernel modules...'},
+    {c:'lg', m:'[OK] PatoBypass::init() → success'},
+    {c:'ly', m:'[SCAN] Scanning anti-cheat signatures...'},
+    {c:'lg', m:'[OK] Garena Shield v4.2 → detected'},
+    {c:'lg', m:'[OK] SpeedHack detector → neutralized'},
+    {c:'ly', m:'[PATCH] Injecting memory bypass patches...'},
+    {c:'lg', m:'[OK] AntiDump.dll → patched (0xFF → 0x90 NOP)'},
+    {c:'lg', m:'[OK] SignatureCheck.dll → bypassed'},
+    {c:'lg', m:'[OK] Root detection → bypassed'},
+    {c:'lg', m:'[OK] HWID spoofing → active'},
+    {c:'ly', m:'[VERIFY] Verifying bypass integrity...'},
+    {c:'lg', m:'[OK] Checksum valid: 0xBYPASS4F9A'},
+    {c:'lg', m:'[OK] SSL certificate → bypassed'},
+    {c:'ly', m:'[UID] Binding UID to bypass token...'},
+    {c:'lg', m:'[OK] UID:{UID} → token generated'},
+    {c:'lg', m:'[OK] Anti-cheat bypass complete!'},
+    {c:'ly', m:'[READY] Select game version to launch'},
+];
+
+let bypassing = false;
+
+function startBypass() {
+    if (bypassing) return;
+    const uid = document.getElementById('uid-input').value;
+    if (uid.length !== 11) return;
+    pop();
+
+    bypassing = true;
+    const btn = document.getElementById('bypass-btn');
+    btn.className = 'bypass-btn busy';
+    btn.disabled = true;
+    document.getElementById('bypass-ico').innerHTML = '<div class="spinner"></div>';
+    document.getElementById('bypass-txt').textContent = 'BYPASSING...';
+
+    // Reset overlay
+    document.getElementById('syslog-text').innerHTML = '';
+    document.getElementById('game-choice').className = '';
+    document.getElementById('prog-wrap').className = 'prog-wrap';
+    document.getElementById('prog-bar').style.width = '0%';
+    document.getElementById('syslog-uid-lbl').innerText = 'UID: ' + uid;
+    document.getElementById('syslog-overlay').classList.add('show');
+
+    // Type logs
+    const logEl = document.getElementById('syslog-text');
+    let i = 0;
+    const typeNext = () => {
+        if (i < LOGS.length) {
+            const line = LOGS[i++];
+            const d = document.createElement('span');
+            d.className = line.c;
+            d.innerText = line.m.replace('{UID}', uid);
+            logEl.appendChild(d);
+            logEl.scrollTop = logEl.scrollHeight;
+            setTimeout(typeNext, 65 + Math.random()*95);
+        } else {
+            document.getElementById('prog-wrap').className = 'prog-wrap on';
+            runProgress();
+        }
+    };
+    setTimeout(typeNext, 200);
+}
+
+function runProgress() {
+    const STEPS = ['BYPASSING ANTI-CHEAT ENGINE','PATCHING MEMORY MODULES','INJECTING BYPASS TOKENS','VERIFYING SIGNATURES','BYPASS COMPLETE'];
+    const bar = document.getElementById('prog-bar');
+    const lbl = document.getElementById('prog-lbl');
+    let p = 0;
+    const iv = setInterval(() => {
+        p += Math.floor(Math.random()*9)+3;
+        if (p >= 100) {
+            p = 100; clearInterval(iv);
+            bar.style.width = '100%';
+            lbl.innerText = 'BYPASS COMPLETE — 100%';
+            setTimeout(showGameChoice, 480);
+        } else {
+            bar.style.width = p + '%';
+            lbl.innerText = STEPS[Math.min(Math.floor(p/25), STEPS.length-1)] + '... ' + p + '%';
+        }
+    }, 80);
+}
+
+function showGameChoice() {
+    pop();
+    document.getElementById('prog-wrap').className = 'prog-wrap';
+    document.getElementById('game-choice').className = 'show';
+    toast('BYPASS COMPLETE', true);
+}
+
+function launchGame(type) {
+    pop();
+    const isMax = type === 'max';
+    toast(isMax ? 'LAUNCHING FF MAX' : 'LAUNCHING FF NORMAL', true);
+    setTimeout(() => {
+        document.getElementById('syslog-overlay').classList.remove('show');
+        bypassing = false;
+        // Reset button
+        const btn = document.getElementById('bypass-btn');
+        if (document.getElementById('uid-input').value.length === 11) {
+            btn.className = 'bypass-btn unlocked';
+            btn.disabled = false;
+        }
+        document.getElementById('bypass-ico').innerHTML = I_SHIELD;
+        document.getElementById('bypass-txt').textContent = 'BYPASS ANTI-CHEAT';
+        // Deep link
+        window.location.href = isMax ? 'freefiremax://' : 'freefire://';
+    }, 1400);
+}
+
+// ===== PARTICLES =====
+function initParticles() {
+    if (typeof particlesJS === 'undefined') return;
+    particlesJS('particles-js', {
+        "particles": {
+            "number": {"value":55},
+            "color":  {"value":"#e30000"},
+            "opacity":{"value":0.15},
+            "size":   {"value":1.5},
+            "move":   {"enable":true,"speed":0.8,"direction":"top"}
+        }
+    });
+}
+
+window.onload = initParticles;
+</script>
+</body>
+</html>
